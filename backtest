@@ -1,0 +1,66 @@
+import random
+import matplotlib.pyplot as plt
+
+# Function to simulate a single coin toss
+def coin_toss():
+    return random.choice(["win", "loss"])
+
+# Function to simulate the Martingale betting strategy
+def martingale(initial_bet, initial_balance, num_rounds):
+    balance = initial_balance
+    bet = initial_bet
+    balance_history = [balance]
+
+    for _ in range(num_rounds):
+        result = coin_toss()
+        if result == "win":
+            balance += bet
+            bet = initial_bet  # Reset bet to initial bet after a win
+        else:
+            balance -= bet
+            bet *= 2  # Double the bet after a loss
+
+        # Record the balance after each round
+        balance_history.append(balance)
+
+        # If balance goes negative, stop the simulation
+        if balance <= 0:
+            break
+
+    return balance_history
+
+# Parameters
+initial_bet = 1
+initial_balance = 1000
+num_rounds = 100
+
+# Run the simulation
+balance_history = martingale(initial_bet, initial_balance, num_rounds)
+
+# Plot the results
+plt.plot(balance_history)
+plt.xlabel("Number of Rounds")
+plt.ylabel("Balance")
+plt.title("Martingale Betting Strategy Simulation")
+plt.show()
+
+# Simulate multiple trials
+num_trials = 1000
+final_balances = []
+
+for _ in range(num_trials):
+    final_balance = martingale(initial_bet, initial_balance, num_rounds)[-1]
+    final_balances.append(final_balance)
+
+# Plot the distribution of final balances
+plt.hist(final_balances, bins=50)
+plt.xlabel("Final Balance")
+plt.ylabel("Frequency")
+plt.title("Distribution of Final Balances after 100 Rounds")
+plt.show()
+
+# Print some statistics
+print(f"Initial balance: ${initial_balance}")
+print(f"Average final balance: ${sum(final_balances) / num_trials:.2f}")
+print(f"Max final balance: ${max(final_balances):.2f}")
+print(f"Min final balance: ${min(final_balances):.2f}")
